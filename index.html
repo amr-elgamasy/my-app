@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اكتشف دورك في فريق التطوير!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --font: 'Tajawal', sans-serif;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s;
+        }
+        
+        h1 {
+            color: var(--secondary);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        /* تصميم بطاقة الاختبار */
+        .quiz-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quiz-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--success));
+        }
+        
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* شريط التقدم */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+        
+        /* تصميم الأسئلة */
+        .question {
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .question.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .question h3 {
+            color: var(--secondary);
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            position: relative;
+            padding-right: 15px;
+        }
+        
+        .question h3::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), transparent);
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .option {
+            background-color: var(--light);
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background-color: #e6f7ff;
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+        }
+        
+        .option.selected::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--primary);
+        }
+        
+        .option-icon {
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* تصميم أزرار التحكم */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-prev {
+            background: linear-gradient(to right, #6c757d, #adb5bd);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, var(--accent), var(--primary));
+        }
+        
+        .btn-finish {
+            background: linear-gradient(to right, #4cc9f0, #4895ef);
+        }
+        
+        .btn-restart {
+            background: linear-gradient(to right, #f72585, #b5179e);
+        }
+        
+        .btn-share {
+            background: linear-gradient(to right, #2ec4b6, #06d6a0);
+        }
+        
+        /* تصميم صفحة النتيجة */
+        .result {
+            display: none;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+        
+        .result-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to right, var(--primary), var(--success));
+        }
+        
+        .result h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .role {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin: 20px 0;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .role::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), transparent);
+        }
+        
+        .emoji {
+            font-size: 4rem;
+            margin: 20px 0;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+        
+        .description {
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #495057;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 120px;
+            margin: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .result-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        /* الرسوم المتحركة */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* التكيف مع الشاشات الصغيرة */
+      /* أضف هذه الاستعلامات إلى قسم الـ Media Queries */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .quiz-card, .result-card {
+        padding: 15px;
+    }
+    
+    .question h3 {
+        font-size: 1.2rem;
+    }
+    
+    .option {
+        padding: 12px 15px;
+    }
+    
+    .btn {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+    }
+    
+    .progress-container {
+        height: 6px;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    .role {
+        font-size: 1.5rem;
+    }
+    
+    .emoji {
+        font-size: 3rem;
+    }
+    
+    .stat-item {
+        min-width: 100px;
+        padding: 10px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="animate__animated animate__fadeInDown">اكتشف دورك في فريق التطوير!</h1>
+            <p class="subtitle animate__animated animate__fadeIn animate__delay-1s">اختبار شخصي يكشف عن الدور الأنسب لك في فريق البرمجة</p>
+        </header>
+        
+        <div class="quiz-card animate__animated animate__fadeIn animate__delay-1s">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            
+            <div id="quiz-container">
+                <!-- الأسئلة ستضاف هنا بواسطة JavaScript -->
+            </div>
+            
+            <div class="controls">
+                <button id="prev-btn" class="btn btn-prev">
+                    <span class="option-icon">←</span> السابق
+                </button>
+                <button id="next-btn" class="btn btn-next">
+                    التالي <span class="option-icon">→</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="result" class="result">
+            <!-- النتيجة ستظهر هنا -->
+        </div>
+    </div>
+
+    <script>
+        // تعريف الأسئلة والخيارات
+        const questions = [
+            {
+                question: "ماذا تفضل في مشروعك؟",
+                options: [
+                    { 
+                        text: "تصميم واجهات جميلة وتفاعلية", 
+                        scores: { frontend: 2, designer: 1 },
+                        icon: "🎨"
+                    },
+                    { 
+                        text: "حل مشاكل الخوارزميات وقواعد البيانات", 
+                        scores: { backend: 2 },
+                        icon: "⚙️"
+                    },
+                    { 
+                        text: "تنظيم العمل والتواصل بين الفريق", 
+                        scores: { leader: 2 },
+                        icon: "👥"
+                    },
+                    { 
+                        text: "تجربة المستخدم وتفاصيل التصميم الدقيقة", 
+                        scores: { designer: 2, frontend: 1 },
+                        icon: "✨"
+                    }
+                ]
+            },
+            {
+                question: "كيف تتعامل مع البق (Bug) في الكود؟",
+                options: [
+                    { 
+                        text: "أستخدم أدوات تطوير المتصفح لإصلاحه", 
+                        scores: { frontend: 2 },
+                        icon: "🔍"
+                    },
+                    { 
+                        text: "أفحص السيرفر وقواعد البيانات أولاً", 
+                        scores: { backend: 2 },
+                        icon: "🔧"
+                    },
+                    { 
+                        text: "أبحث عن حل على Stack Overflow", 
+                        scores: { frontend: 1, backend: 1 },
+                        icon: "📚"
+                    },
+                    { 
+                        text: "أنسق مع الفريق لحل المشكلة", 
+                        scores: { leader: 2 },
+                        icon: "🤝"
+                    }
+                ]
+            },
+            {
+                question: "ما هو مشروعك المثالي؟",
+                options: [
+                    { 
+                        text: "موقع ويب بتصميم مبتكر وتجربة مستخدم رائعة", 
+                        scores: { frontend: 2, designer: 1 },
+                        icon: "🌐"
+                    },
+                    { 
+                        text: "نظام معقد بمعالجة بيانات ضخمة", 
+                        scores: { backend: 2 },
+                        icon: "📊"
+                    },
+                    { 
+                        text: "تطبيق يخدم فكرة إبداعية جديدة", 
+                        icon: "💡",
+                        scores: { designer: 1, frontend: 1 }
+                    },
+                    { 
+                        text: "إدارة فريق لتنفيذ مشروع كبير", 
+                        scores: { leader: 2 },
+                        icon: "🚀"
+                    }
+                ]
+            },
+            {
+                question: "ما هو أسلوبك في العمل؟",
+                options: [
+                    { 
+                        text: "أحب الإبداع والتجديد", 
+                        scores: { designer: 2 },
+                        icon: "🎭"
+                    },
+                    { 
+                        text: "أفضل العمل المنظم والمخطط", 
+                        scores: { backend: 1, leader: 1 },
+                        icon: "📝"
+                    },
+                    { 
+                        text: "أستمتع بحل المشكلات التقنية", 
+                        scores: { backend: 2, frontend: 1 },
+                        icon: "🧩"
+                    },
+                    { 
+                        text: "أحب التواصل والعمل الجماعي", 
+                        scores: { leader: 2 },
+                        icon: "👨‍💻"
+                    }
+                ]
+            },
+            {
+                question: "ما هي أداتك المفضلة؟",
+                options: [
+                    { 
+                        text: "أدوات التصميم مثل Figma أو Photoshop", 
+                        scores: { designer: 2 },
+                        icon: "🖌️"
+                    },
+                    { 
+                        text: "محرر الأكواد مثل VS Code", 
+                        scores: { frontend: 1, backend: 1 },
+                        icon: "💻"
+                    },
+                    { 
+                        text: "أدوات قواعد البيانات مثل MySQL", 
+                        scores: { backend: 2 },
+                        icon: "🗃️"
+                    },
+                    { 
+                        text: "أدوات إدارة المشاريع مثل Jira", 
+                        scores: { leader: 2 },
+                        icon: "📈"
+                    }
+                ]
+            },
+            {
+                question: "كيف تتعلم تقنيات جديدة؟",
+                options: [
+                    { 
+                        text: "أحب التجربة المباشرة وبناء مشاريع صغيرة", 
+                        scores: { frontend: 2 },
+                        icon: "🧪"
+                    },
+                    { 
+                        text: "أقرأ الوثائق الرسمية بعمق", 
+                        scores: { backend: 2 },
+                        icon: "📄"
+                    },
+                    { 
+                        text: "أشاهد دروسًا مرئية وأتابع التصميمات الحديثة", 
+                        scores: { designer: 2 },
+                        icon: "🎥"
+                    },
+                    { 
+                        text: "أشارك في ورش عمل وأتعلم من الآخرين", 
+                        scores: { leader: 2 },
+                        icon: "👨‍🏫"
+                    }
+                ]
+            },
+            {
+                question: "ما هو موقفك من المواعيد النهائية؟",
+                options: [
+                    { 
+                        text: "أعمل بجد لتسليم العمل في الوقت المحدد", 
+                        scores: { frontend: 1, backend: 1 },
+                        icon: "⏱️"
+                    },
+                    { 
+                        text: "أخطط مسبقًا لتجنب الضغط الأخير", 
+                        scores: { backend: 1, leader: 1 },
+                        icon: "🗓️"
+                    },
+                    { 
+                        text: "أفضل العمل بمرونة مع التركيز على الجودة", 
+                        scores: { designer: 2 },
+                        icon: "🎯"
+                    },
+                    { 
+                        text: "أنسق مع الفريق لتوزيع المهام بشكل عادل", 
+                        scores: { leader: 2 },
+                        icon: "⚖️"
+                    }
+                ]
+            },
+            {
+                question: "ما الذي يهمك أكثر في المشروع؟",
+                options: [
+                    { 
+                        text: "جمالية الواجهة وسهولة الاستخدام", 
+                        scores: { frontend: 1, designer: 1 },
+                        icon: "👁️"
+                    },
+                    { 
+                        text: "كفاءة الأداء وقابلية التوسع", 
+                        scores: { backend: 2 },
+                        icon: "🚄"
+                    },
+                    { 
+                        text: "التجربة الإبداعية والابتكار", 
+                        scores: { designer: 2 },
+                        icon: "💎"
+                    },
+                    { 
+                        text: "تحقيق أهداف العمل ورضا العميل", 
+                        scores: { leader: 2 },
+                        icon: "🏆"
+                    }
+                ]
+            }
+        ];
+
+        // تعريف النتائج
+        const roles = {
+            frontend: {
+                title: "مطور واجهات أمامية (Frontend Developer)",
+                emoji: "💻",
+                description: "أنت ساحر الواجهات! لديك عين فنية وقدرة على تحويل الأفكار إلى واقع مرئي. تستمتع بجعل التطبيقات جميلة وسلسة للمستخدمين. مهاراتك في HTML, CSS, JavaScript تجعلك أساسيًا في أي فريق تطوير.",
+                strengths: ["الإبداع البصري", "الاهتمام بالتفاصيل", "سرعة التعلم"],
+                weaknesses: ["أحيانًا تهمل الأداء", "تكره العمل على الخلفية"]
+            },
+            backend: {
+                title: "مطور خلفية (Backend Developer)",
+                emoji: "⚙️",
+                description: "أنت عقل الفريق الخفي! تستمتع ببناء الأنظمة المعقدة والتعامل مع قواعد البيانات والخوادم. الأكواد هي لغتك السرية، وقدرتك على حل المشكلات المنطقية لا تضاهى.",
+                strengths: ["التفكير المنطقي", "حل المشكلات", "الاهتمام بالأداء"],
+                weaknesses: ["أحيانًا تهمل الواجهة", "تكره العمل على التصاميم"]
+            },
+            designer: {
+                title: "مصمم واجهات المستخدم (UI/UX Designer)",
+                emoji: "🎨",
+                description: "أنت فنان الفريق! لديك حس جمالي مميز وتركيز كبير على تجربة المستخدم. تستمتع بتحويل الأفكار إلى تصاميم جميلة وعملية. أنت الجسر بين المطورين والمستخدمين النهائيين.",
+                strengths: ["الإبداع", "الفهم العميق للمستخدم", "الاهتمام بالتفاصيل"],
+                weaknesses: ["أحيانًا تهمل القيود التقنية", "تكره العمل على الأكواد"]
+            },
+            leader: {
+                title: "قائد الفريق (Team Leader)",
+                emoji: "👔",
+                description: "أنت القائد الطبيعي للفريق! لديك مهارات تنظيمية ممتازة وقدرة على تنسيق العمل بين الأعضاء. تستمتع برؤية الصورة الكبيرة ومساعدة الفريق على تحقيق أهدافه.",
+                strengths: ["التواصل", "التنظيم", "حل النزاعات"],
+                weaknesses: ["أحيانًا تبتعد عن الجانب التقني", "تكره العمل الفردي الطويل"]
+            }
+        };
+
+        // متغيرات التطبيق
+        let currentQuestion = 0;
+        let answers = [];
+        let scores = {
+            frontend: 0,
+            backend: 0,
+            designer: 0,
+            leader: 0
+        };
+
+        // عناصر DOM
+        const quizContainer = document.getElementById('quiz-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const resultDiv = document.getElementById('result');
+        const progressBar = document.getElementById('progress-bar');
+
+        // تهيئة الاختبار
+        function initQuiz() {
+            renderQuestion();
+            updateButtons();
+            updateProgressBar();
+        }
+
+// استبدل دالة renderQuestion بهذا الكود:
+function renderQuestion() {
+    quizContainer.innerHTML = '';
+    
+    const questionDiv = document.createElement('div');
+    questionDiv.className = 'question active'; // تأكد من إضافة كلاس active هنا
+    
+    const question = questions[currentQuestion];
+    
+    const questionTitle = document.createElement('h3');
+    questionTitle.textContent = `سؤال ${currentQuestion + 1}: ${question.question}`;
+    questionDiv.appendChild(questionTitle);
+    
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'options';
+    
+    question.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = `option ${answers[currentQuestion] === index ? 'selected' : ''}`;
+        optionDiv.textContent = option.text;
+        optionDiv.dataset.index = index;
+        
+        optionDiv.addEventListener('click', () => {
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            optionDiv.classList.add('selected');
+            answers[currentQuestion] = index;
+        });
+        
+        optionsDiv.appendChild(optionDiv);
+    });
+    
+    questionDiv.appendChild(optionsDiv);
+    quizContainer.appendChild(questionDiv);
+    
+    // أضف هذه السطر لتفعيل تأثير الظهور
+    questionDiv.style.animation = 'fadeIn 0.6s';
+}
+function initQuiz() {
+    renderQuestion();
+    updateButtons();
+    updateProgressBar();
+
+    // أضف مستمع الأحداث هنا فقط (بدون تكرار)
+    nextBtn.addEventListener('click', () => {
+        if (answers[currentQuestion] === undefined) {
+            alert('الرجاء اختيار إجابة للمتابعة');
+            return;
+        }
+        
+        if (currentQuestion < questions.length - 1) {
+            currentQuestion++;
+            renderQuestion();
+            updateButtons();
+            updateProgressBar();
+            quizContainer.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            showResult();
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            renderQuestion();
+            updateButtons();
+            updateProgressBar();
+        }
+    });
+}
+        // حساب النتيجة النهائية
+        function calculateResult() {
+            // إعادة تعيين النقاط
+            scores = {
+                frontend: 0,
+                backend: 0,
+                designer: 0,
+                leader: 0
+            };
+            
+            // حساب النقاط بناء على الإجابات
+            answers.forEach((answerIndex, questionIndex) => {
+                if (answerIndex !== undefined) {
+                    const option = questions[questionIndex].options[answerIndex];
+                    for (const role in option.scores) {
+                        scores[role] += option.scores[role];
+                    }
+                }
+            });
+            
+            // تحديد الدور الأعلى نقاطاً
+            let maxScore = 0;
+            let userRole = 'frontend';
+            
+            for (const role in scores) {
+                if (scores[role] > maxScore) {
+                    maxScore = scores[role];
+                    userRole = role;
+                }
+            }
+            
+            return userRole;
+        }
+
+        // عرض النتيجة
+        function showResult() {
+            const role = calculateResult();
+            const roleInfo = roles[role];
+            
+            // حساب النسب المئوية
+            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            const percentages = {};
+            for (const r in scores) {
+                percentages[r] = Math.round((scores[r] / total) * 100);
+            }
+            
+            quizContainer.style.display = 'none';
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            
+            resultDiv.innerHTML = `
+                <div class="result-card">
+                    <h2>نتيجتك النهائية!</h2>
+                    <div class="emoji">${roleInfo.emoji}</div>
+                    <div class="role">${roleInfo.title}</div>
+                    
+                    <div class="description">
+                        ${roleInfo.description}
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${percentages.frontend}%</div>
+                            <div class="stat-label">Frontend</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${percentages.backend}%</div>
+                            <div class="stat-label">Backend</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${percentages.designer}%</div>
+                            <div class="stat-label">Designer</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${percentages.leader}%</div>
+                            <div class="stat-label">Leader</div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-buttons">
+                        <button onclick="restartQuiz()" class="btn btn-restart">
+                            <span class="option-icon">🔄</span> إعادة الاختبار
+                        </button>
+                        <button onclick="shareResult()" class="btn btn-share">
+                            <span class="option-icon">📤</span> مشاركة النتيجة
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            
+            // تأثير عند ظهور النتيجة
+            const emoji = document.querySelector('.emoji');
+            emoji.style.animation = 'bounce 2s infinite';
+        }
+
+        // إعادة تشغيل الاختبار
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            scores = {
+                frontend: 0,
+                backend: 0,
+                designer: 0,
+                leader: 0
+            };
+            
+            quizContainer.style.display = 'block';
+            prevBtn.style.display = 'block';
+            nextBtn.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            renderQuestion();
+            updateButtons();
+            updateProgressBar();
+            
+            // تأثير عند إعادة التشغيل
+            quizContainer.style.animation = 'fadeIn 0.6s';
+        }
+
+        // مشاركة النتيجة
+        function shareResult() {
+            const role = calculateResult();
+            const roleInfo = roles[role];
+            
+            const shareText = `نتيجتي في اختبار "من أنت في فريق التطوير؟" هي: ${roleInfo.title} ${roleInfo.emoji}\n\n${roleInfo.description}\n\nجرب الاختبار بنفسك: ${window.location.href}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'اكتشف دورك في فريق التطوير!',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(() => {
+                    copyToClipboard(shareText);
+                });
+            } else {
+                copyToClipboard(shareText);
+                alert('تم نسخ النتيجة إلى الحافظة! يمكنك مشاركتها الآن.');
+            }
+        }
+
+        // نسخ النص إلى الحافظة
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        // أحداث الأزرار
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+                updateButtons();
+                updateProgressBar();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (answers[currentQuestion] === undefined) {
+                alert('الرجاء اختيار إجابة للمتابعة');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                updateButtons();
+                updateProgressBar();
+            } else {
+                showResult();
+            }
+        });
+
+        // بدء الاختبار
+        initQuiz();
+        
+        // جعل الدوال متاحة عالمياً لاستخدامها في الأزرار
+        window.restartQuiz = restartQuiz;
+        window.shareResult = shareResult;
+    </script>
+</body>
+</html>
